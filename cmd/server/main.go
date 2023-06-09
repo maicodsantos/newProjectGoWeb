@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/maicodsantos/newProjectGoweb/cmd/server/handler"
 	"github.com/maicodsantos/newProjectGoweb/internal/users"
+	"github.com/maicodsantos/newProjectGoweb/pkg/store"
 )
 
 func main() {
@@ -22,9 +23,13 @@ func main() {
 	log.Println("User: ", usuario)
 	log.Println("Password", password)
 
-	repo := users.NewRepository()     // Criação da instância Repository
-	service := users.NewService(repo) // Criação da instância Service
-	u := handler.NewUser(service)     // Criação do Controller
+	store := store.Factory("file", "users.json")
+	if store == nil {
+		log.Fatal("Não foi possível criar a store.")
+	}
+	repo := users.NewRepository(store) // Criação da instância Repository
+	service := users.NewService(repo)  // Criação da instância Service
+	u := handler.NewUser(service)      // Criação do Controller
 
 	r := gin.Default()
 	pr := r.Group("/users")

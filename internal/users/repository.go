@@ -1,6 +1,10 @@
 package users
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/maicodsantos/newProjectGoweb/pkg/store"
+)
 
 var users []User
 var lastID int
@@ -14,24 +18,56 @@ type Repository interface {
 	Delete(id int) error
 }
 
-type repository struct{}
+type repository struct {
+	db store.Store
+}
 
-func NewRepository() Repository {
-	return &repository{}
+func NewRepository(db store.Store) Repository {
+	return &repository{
+		db: db,
+	}
 }
 
 func (r *repository) GetAll() ([]User, error) {
+	var users []User
+	err := r.db.Read(&users)
+	if err != nil {
+		return nil, err
+	}
 	return users, nil
 }
 
 func (r *repository) LastID() (int, error) {
-	return lastID, nil
+	var users []User
+	if err := r.db.Read(&users); err != nil {
+		return 0, err
+	}
+	if len(users) == 0 {
+		return 0, nil
+	}
+	ultimoUser := users[len(users)-1]
+	return ultimoUser.Id, nil
 }
 
+// Aqui está a implementação antiga do repositório. (CREATE)
+//func (r *repository) Create(id int, nome, sobrenome, email string, idade, altura int, ativo bool, dataDeCriacao string) (User, error) {
+//	u := User{id, nome, sobrenome, email, idade, altura, ativo, dataDeCriacao}
+//	users = append(users, u)
+//	lastID = u.Id
+//	return u, nil
+//}
+
+// Aqui esta a nova implementção.
 func (r *repository) Create(id int, nome, sobrenome, email string, idade, altura int, ativo bool, dataDeCriacao string) (User, error) {
+	users := []User{}
+	r.db.Read(&users)
+
 	u := User{id, nome, sobrenome, email, idade, altura, ativo, dataDeCriacao}
+
 	users = append(users, u)
-	lastID = u.Id
+	if err := r.db.Write(users); err != nil {
+		return User{}, err
+	}
 	return u, nil
 }
 

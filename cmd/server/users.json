@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "nome": "Maicon",
+    "sobrenome": "Santos",
+    "email": "maicon@hotmail.com",
+    "idade": 33,
+    "altura": 179,
+    "ativo": true,
+    "data_de_criacao": "12/07/1989"
+  },
+  {
+    "id": 2,
+    "nome": "Isa",
+    "sobrenome": "Santos",
+    "email": "maicon@hotmail.com",
+    "idade": 33,
+    "altura": 179,
+    "ativo": true,
+    "data_de_criacao": "12/07/1989"
+  }
+]
